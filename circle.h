@@ -14,6 +14,7 @@ class Circle {
 	std::vector<double> points;
 public:
 	Circle():R(DEFAULT_R),T(DEFAULT_T) {center[0]=0;center[1]=0;}
+	inline void setT(double t){T=t;}
 	inline void setRadius(int r){R=r;}
 	inline int getSize() const {return points.size();}
 	inline double getPoint(int i) const {return points.at(i);}

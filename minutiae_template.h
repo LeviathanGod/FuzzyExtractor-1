@@ -3,12 +3,12 @@
 
 #include <cstdlib>
 
-const unsigned int MINUTIAE_BUF_SIZE = 60;
+const unsigned int MINUTIAE_BUF_SIZE = 25;
 const unsigned int DEFAULT_MAX_X = 400;
 const unsigned int DEFAULT_MAX_Y = 400;
 
 class Minutia {
-	int x,y;
+	short x,y;
 public:
 	Minutia():x(-1),y(-1){}
 	Minutia(int _x,int _y):x(_x),y(_y){}
@@ -47,6 +47,50 @@ public:
 		while(size < number)
 			addRandom();
 		return true;
+	}
+	inline void copy(const MinutiaeTemplate & rh)
+	{
+		size = rh.size;
+		for(int i = 0; i < size; i++)
+			minutiae[i] = rh.minutiae[i];
+	}
+	inline void disturb(int scale)
+	{
+		for(int i = 0; i < size; i++)
+		{
+			minutiae[i].setX(minutiae[i].getX()+rand()%(scale*2+1)-scale);
+			minutiae[i].setY(minutiae[i].getY()+rand()%(scale*2+1)-scale);
+		}
+	}
+	inline void remove(int index)
+	{
+		if(index >= 0 && index < size)
+			minutiae[index] = minutiae[--size];
+	}
+	inline void removeRandom()
+	{
+		if(size > 0) remove(rand()%size);
+	}
+	inline void removeRandoms(int k)
+	{
+		for(int i = 0; i < k && size > 0; i++)
+			remove(rand()%size);
+	}
+	inline void removeOrAddRandom(int k)
+	{
+		int K = rand()%(2*k+1)-k;
+		if(K > 0)
+		{
+			while(size < MINUTIAE_BUF_SIZE)
+				addRandom();
+		}
+		else if(K < 0)
+			removeRandoms(-K);
+	}
+	void rotate(double degree);
+	inline void rotateRandom(double degree)
+	{
+		rotate(rand()*(2*degree)/RAND_MAX-degree);
 	}
 };
 

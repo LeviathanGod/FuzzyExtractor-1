@@ -10,3 +10,14 @@ double distance(const Minutia & m1, const Minutia & m2)
 	double dy = m1.getY()-m2.getY();
 	return std::sqrt(dx*dx+dy*dy);
 }
+
+void MinutiaeTemplate::rotate(double degree)
+{
+	for(int i = 0; i < size; i++)
+	{
+		int x = minutiae[i].getX();
+		int y = minutiae[i].getY();
+		minutiae[i].setX(x*cos(degree)-y*sin(degree));
+		minutiae[i].setY(x*sin(degree)+y*cos(degree));
+	}
+}
