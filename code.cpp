@@ -11,7 +11,7 @@ double CountCode::distance(const CountCode & rh) const
 	int sum = 0;
 	for(int i = 0; i < size; i++)
 		sum += abs(code[i]-rh.code[i]);
-	return (double)sum/size;
+	return ((double)sum)/size;
 }
 
 void CountCode::fromCircle(const Circle & circle)

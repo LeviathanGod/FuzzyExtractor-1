@@ -8,14 +8,14 @@
 const int TEMPLATE_SIZE = 20;
 const int MAX_X = 255;
 const int MAX_Y = 255;
-const int TEMPLATE_NUM = 10;
-const int TEST_SET_SIZE = 5;
+const int TEMPLATE_NUM = 100;
+const int TEST_SET_SIZE = 20;
 const int disturbScale = 5;
 
 using namespace std;
 //using namespace cv;
 
-bool match(const MinutiaeTemplate & mt1, const MinutiaeTemplate & mt2, int nBin, double t, double T)
+double getDistance(const MinutiaeTemplate & mt1, const MinutiaeTemplate & mt2, int nBin, double T)
 {
 	Circle c1,c2;
 	c1.setT(T);c2.setT(T);
@@ -23,7 +23,12 @@ bool match(const MinutiaeTemplate & mt1, const MinutiaeTemplate & mt2, int nBin,
 	c1.getCenter(mt1); c2.getCenter(mt2);
 	c1.fromTemplate(mt1); c2.fromTemplate(mt2);
 	code1.fromCircle(c1); code2.fromCircle(c2);
-	return code1.distance(code2) < t;
+	return code1.distance(code2);
+}
+
+inline bool match(const MinutiaeTemplate & mt1, const MinutiaeTemplate & mt2, int nBin, double t, double T)
+{
+	return getDistance(mt1,mt2,nBin,T) < t;
 }
 
 int main()
@@ -35,6 +40,7 @@ int main()
 	MinutiaeTemplate testSet1[TEST_SET_SIZE][TEMPLATE_NUM];
 	MinutiaeTemplate testSet2[TEST_SET_SIZE][TEMPLATE_NUM];
 	MinutiaeTemplate testSet3[TEST_SET_SIZE][TEMPLATE_NUM];
+
 	cout << "Generating original templates..." << endl;
 	for(int i = 0; i < TEMPLATE_NUM; i++)
 		templates[i].fillWithRandom(TEMPLATE_SIZE);
@@ -42,9 +48,9 @@ int main()
 	cout << "Generating first test set..." << endl;
 	for(int i = 0; i < TEST_SET_SIZE; i++)
 	{
-		for(int j = 0; j < TEMPLATE_NUM; i++)
+		for(int j = 0; j < TEMPLATE_NUM; j++)
 		{
-			testSet1[i][j].copy(templates[j]);
+			testSet1[i][j].copy(templates[i]);
 			testSet1[i][j].disturb(disturbScale);
 		}
 		cout << "*";
@@ -53,9 +59,9 @@ int main()
 	cout << "Generating second test set..." << endl;
 	for(int i = 0; i < TEST_SET_SIZE; i++)
 	{
-		for(int j = 0; j < TEMPLATE_NUM; i++)
+		for(int j = 0; j < TEMPLATE_NUM; j++)
 		{
-			testSet2[i][j].copy(templates[j]);
+			testSet2[i][j].copy(templates[i]);
 			testSet2[i][j].removeOrAddRandom(2);
 		}
 		cout << "*";
@@ -64,9 +70,9 @@ int main()
 	cout << "Generating third test set..." << endl;
 	for(int i = 0; i < TEST_SET_SIZE; i++)
 	{
-		for(int j = 0; j < TEMPLATE_NUM; i++)
+		for(int j = 0; j < TEMPLATE_NUM; j++)
 		{
-			testSet3[i][j].copy(templates[j]);
+			testSet3[i][j].copy(templates[i]);
 			testSet3[i][j].rotateRandom(M_PI/6);
 		}
 		cout << "*";
@@ -86,15 +92,25 @@ int main()
 			int nBin = nBinSet[iB];
 			cout << T << "," << nBin << ",";
 			int correct = 0;
+			int fwrong = 0;
+			// double match_distance = 0;
+			// double wrong_distance = 0;
 			for(int i = 0; i < TEST_SET_SIZE; i++)
 			{
 				for(int j = 0; j < TEMPLATE_NUM; j++)
 				{
+					// match_distance += getDistance(templates[i],testSet1[i][j],nBin,T);
+					// wrong_distance += getDistance(templates[i],testSet1[(i+1)%TEST_SET_SIZE][j],nBin,T);
 					if(match(templates[i],testSet1[i][j],nBin,t,T))
 						correct++;
+					if(match(templates[i],testSet1[(i+1)%TEST_SET_SIZE][j],nBin,t,T))
+						fwrong++;
 				}
 			}
-			cout << (double)correct/(TEST_SET_SIZE*TEMPLATE_NUM) << endl;
+			cout << (double)correct/(TEST_SET_SIZE*TEMPLATE_NUM) << ",";
+			cout << (double)fwrong/(TEST_SET_SIZE*TEMPLATE_NUM) << endl;
+			// cout << "Average match distance: " << match_distance/(TEST_SET_SIZE*TEMPLATE_NUM) << endl;
+			// cout << "Average wrong distance: " << wrong_distance/(TEST_SET_SIZE*TEMPLATE_NUM) << endl;
 		}
 	}
 	cout << "Start testing the second test set..." << endl;
@@ -106,15 +122,25 @@ int main()
 			int nBin = nBinSet[iB];
 			cout << T << "," << nBin << ",";
 			int correct = 0;
+			int fwrong = 0;
+			// double match_distance = 0;
+			// double wrong_distance = 0;
 			for(int i = 0; i < TEST_SET_SIZE; i++)
 			{
 				for(int j = 0; j < TEMPLATE_NUM; j++)
 				{
+					// match_distance += getDistance(templates[i],testSet2[i][j],nBin,T);
+					// wrong_distance += getDistance(templates[i],testSet2[(i+1)%TEST_SET_SIZE][j],nBin,T);
 					if(match(templates[i],testSet2[i][j],nBin,t,T))
 						correct++;
+					if(match(templates[i],testSet2[(i+1)%TEST_SET_SIZE][j],nBin,t,T))
+						fwrong++;
 				}
 			}
-			cout << (double)correct/(TEST_SET_SIZE*TEMPLATE_NUM) << endl;
+			cout << (double)correct/(TEST_SET_SIZE*TEMPLATE_NUM) << ",";
+			cout << (double)fwrong/(TEST_SET_SIZE*TEMPLATE_NUM) << endl;
+			// cout << "Average match distance: " << match_distance/(TEST_SET_SIZE*TEMPLATE_NUM) << endl;
+			// cout << "Average wrong distance: " << wrong_distance/(TEST_SET_SIZE*TEMPLATE_NUM) << endl;
 		}
 	}
 	cout << "Start testing the third test set..." << endl;
@@ -126,15 +152,25 @@ int main()
 			int nBin = nBinSet[iB];
 			cout << T << "," << nBin << ",";
 			int correct = 0;
+			int fwrong = 0;
+			// double match_distance = 0;
+			// double wrong_distance = 0;
 			for(int i = 0; i < TEST_SET_SIZE; i++)
 			{
 				for(int j = 0; j < TEMPLATE_NUM; j++)
 				{
+					// match_distance += getDistance(templates[i],testSet3[i][j],nBin,T);
+					// wrong_distance += getDistance(templates[i],testSet3[(i+1)%TEST_SET_SIZE][j],nBin,T);
 					if(match(templates[i],testSet3[i][j],nBin,t,T))
 						correct++;
+					if(match(templates[i],testSet3[(i+1)%TEST_SET_SIZE][j],nBin,t,T))
+						fwrong++;
 				}
 			}
-			cout << (double)correct/(TEST_SET_SIZE*TEMPLATE_NUM) << endl;
+			cout << (double)correct/(TEST_SET_SIZE*TEMPLATE_NUM) << ",";
+			cout << (double)fwrong/(TEST_SET_SIZE*TEMPLATE_NUM) << endl;
+			// cout << "Average match distance: " << match_distance/(TEST_SET_SIZE*TEMPLATE_NUM) << endl;
+			// cout << "Average wrong distance: " << wrong_distance/(TEST_SET_SIZE*TEMPLATE_NUM) << endl;
 		}
 	}
 	return 0;

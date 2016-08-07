@@ -1,4 +1,6 @@
 #include <cmath>
+#include <cassert>
+#include <iostream>
 #include "circle.h"
 #include "minutiae_template.h"
 
@@ -58,12 +60,17 @@ void Circle::fromMinutiaPair(const Minutia & m1, const Minutia & m2)
 			a = t-M_PI/2+getAngle(dx1,dy1);
 		}
 		double d = sin(t)*sqrt(rr1);
+		if(d > R) return;
 		phi = acos(d/R);
+		assert(!isnan(phi));
+		assert(!isnan(a));
 	}
 	else
 	{
 		a = getAngle(dx2,dy2)+M_PI/2;
 		phi = M_PI/2;
+		assert(!isnan(phi));
+		assert(!isnan(a));
 	}
 	points.push_back(bound(a+phi));
 	points.push_back(bound(a-phi));
