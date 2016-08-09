@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <cmath>
 #include <algorithm>
+#include <cstring>
 //#include <opencv2/opencv.hpp>
 #include "minutiae_template.h"
 #include "circle.h"
@@ -25,7 +26,15 @@ const double DEFAULT_T2 = 5.0;
 
 using namespace std;
 //using namespace cv;
-
+//
+const char * path = "fingerprints/";
+const char * getFullPath(char *buf, int i, int j)
+{
+	strcpy(buf,path);
+	sprintf(buf+strlen(buf),"%d_",i);
+	sprintf(buf+strlen(buf),"%d.pgm",j);
+	return buf;
+}
 
 double computeEER(double rightDistance[][TEMPLATE_NUM], double wrongDistance[][TEMPLATE_NUM], double *t)
 {
@@ -346,13 +355,18 @@ void randomTest()
 #endif
 }
 
+void testWithFingerprints()
+{
+	
+}
+
 int main()
 {
 	srand((unsigned)time(0));
 #if 0
 	randomTest();
 #else
-
+	testWithFingerprints();
 #endif
 	return 0;
 }
