@@ -76,9 +76,8 @@ inline bool match(const MinutiaeTemplate & mt1, const MinutiaeTemplate & mt2, in
 	return getDistance(mt1,mt2,nBin,T) < t;
 }
 
-int main()
+void randomTest()
 {
-	srand((unsigned)time(0));
 	MinutiaeTemplate::setMaxXY(MAX_X,MAX_Y);
 
 	MinutiaeTemplate templates[TEMPLATE_NUM];
@@ -344,6 +343,16 @@ int main()
 #endif
 		}
 	}
+#endif
+}
+
+int main()
+{
+	srand((unsigned)time(0));
+#if 0
+	randomTest();
+#else
+
 #endif
 	return 0;
 }
