@@ -81,7 +81,7 @@ public:
 		int K = rand()%(2*k+1)-k;
 		if(K > 0)
 		{
-			while(size < MINUTIAE_BUF_SIZE)
+			while(size < MINUTIAE_BUF_SIZE && K-->0)
 				addRandom();
 		}
 		else if(K < 0)

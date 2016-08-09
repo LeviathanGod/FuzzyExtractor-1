@@ -13,6 +13,7 @@ class CountCode {
 public:
 	CountCode(int s):size(s){}
 	double distance(const CountCode & rh) const;
+	double rotateDistance(const CountCode & rh, int offset = 0) const;
 	void fromCircle(const Circle & circle);
 };
 

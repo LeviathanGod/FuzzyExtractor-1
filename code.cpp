@@ -14,6 +14,19 @@ double CountCode::distance(const CountCode & rh) const
 	return ((double)sum)/size;
 }
 
+double CountCode::rotateDistance(const CountCode & rh, int offset) const
+{
+	int min = 0x7fffffff;
+	for(int i = -offset; i < offset; i++)
+	{
+		int sum = 0;
+		for(int j = 0; j < size; j++)
+			sum += abs(code[j]-rh.code[(j+i+size)%size]);
+		if(min > sum) min = sum;
+	}
+	return ((double)min)/size;
+}
+
 void CountCode::fromCircle(const Circle & circle)
 {
 	for(int i = 0; i < size; i++)
