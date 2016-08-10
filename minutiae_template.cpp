@@ -1,4 +1,5 @@
 #include <cmath>
+#include "thimble/all.h"
 #include "minutiae_template.h"
 
 unsigned int MinutiaeTemplate::maxx = DEFAULT_MAX_X;
@@ -20,4 +21,18 @@ void MinutiaeTemplate::rotate(double degree)
 		minutiae[i].setX(x*cos(degree)-y*sin(degree));
 		minutiae[i].setY(x*sin(degree)+y*cos(degree));
 	}
+}
+
+void MinutiaeTemplate::setReferencePoint()
+{
+	thimble::Fingerprint fingerprint;
+	if(!fingerprint.fromImageFile(filename,500))
+	{
+		std::cerr << "Failed to read pgm file " << filename << std::endl;
+		exit(1);
+	}
+	thimble::DirectedPoint drp = fingerprint.getDirectedReferencePoint();
+	centerx = drp.x;
+	centery = drp.y;
+	std::cerr << filename << ' ' << centerx << ' ' << centery << std::endl;
 }

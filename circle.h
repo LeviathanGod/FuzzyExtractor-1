@@ -4,7 +4,7 @@
 #include <vector>
 #include "minutiae_template.h"
 
-const int DEFAULT_R = 150;
+const int DEFAULT_R = 250;
 const double DEFAULT_T = 0.0;
 
 class Circle {

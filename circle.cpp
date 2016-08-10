@@ -25,6 +25,12 @@ inline double bound(double a)
 }
 
 void Circle::getCenter(const MinutiaeTemplate & mt){
+	if(mt.getFilename())
+	{
+		center[0] = mt.getCenterX();
+		center[1] = mt.getCenterY();
+		return;
+	}
 	if(mt.getSize() == 0) return;
 	int sumX = 0, sumY = 0, number = mt.getSize();
 	for(int i = 0; i < number; i++)
@@ -32,6 +38,8 @@ void Circle::getCenter(const MinutiaeTemplate & mt){
 		sumX += mt.getMinutia(i).getX();
 		sumY += mt.getMinutia(i).getY();
 	}
+	double wX = (double)sumX/number;
+	double wY = (double)sumY/number;
 	center[0] = (sumX+number/2)/number;
 	center[1] = (sumY+number/2)/number;
 }
