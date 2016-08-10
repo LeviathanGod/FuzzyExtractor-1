@@ -54,6 +54,7 @@ void CountCode::fromCircle(const Circle & circle)
 {
 	for(int i = 0; i < size; i++)
 		code[i] = 0;
+	summation = 0;
 	for(int i = 0; i < circle.getSize(); i++)
 	{
 		double a = circle.getPoint(i);
@@ -61,5 +62,15 @@ void CountCode::fromCircle(const Circle & circle)
 		while(a < 0) a += M_PI*2;
 		int index = getBinIndex(a,size);
 		code[index]++;
+		summation++;
 	}
+}
+
+void CountCode::obfusticate()
+{
+	int ncode[MAX_CODE_SIZE];
+	for(int i = 0; i < size; i++)
+		ncode[i] = (code[i]+code[(i+size-1)%size]+code[(i+1)%size])/3;
+	for(int i = 0; i < size; i++)
+		code[i] = ncode[i];
 }

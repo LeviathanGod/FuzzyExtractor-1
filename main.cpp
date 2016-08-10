@@ -18,6 +18,7 @@
 #define NO_ROTATE_FIRST
 #define NO_ROTATE_SECOND
 //#define SHOW_TEMPLATE
+#define CALCULATE_DISTANCE
 
 const int TEMPLATE_SIZE = MINUTIAE_BUF_SIZE;
 const int MAX_X = 255;
@@ -57,6 +58,35 @@ void drawCode(const CountCode & code, int num)
 	}
 	for(int i = 0; i < code.getSize()-1; i++)
 		line(mat,points[i],points[i+1],Scalar(0,0,0));
+	char buf[10];
+	sprintf(buf,"%d",num);
+	imshow(buf,mat);
+}
+
+void drawCodeDiff(const CountCode & code, const CountCode & code2, int num)
+{
+	int w=800,h=400;
+	Mat mat(h,w,CV_8UC3,Scalar(255,255,255));
+	int vsize = h/200;
+	int hsize = w/code.getSize();
+	Point points[MAX_CODE_SIZE];
+	for(int i = 0; i < code.getSize(); i++)
+	{
+		points[i] = Point(i*hsize,h/2 - (code.getAt(i)-code2.getAt(i))*vsize);
+		circle(mat,points[i],3,Scalar(0,0,255),CV_FILLED);
+	}
+	for(int i = 0; i < code.getSize()-1; i++)
+		line(mat,points[i],points[i+1],Scalar(0,0,0));
+	Point accumPoints[MAX_CODE_SIZE];
+	int curr = 0;
+	for(int i = 0; i < code.getSize(); i++)
+	{
+		curr += code.getAt(i)-code2.getAt(i);
+		accumPoints[i] = Point(i*hsize,h/2-curr*vsize);
+	}
+	for(int i = 0; i < code.getSize()-1; i++)
+		line(mat,accumPoints[i],accumPoints[i+1],Scalar(255,0,0));
+	line(mat,Point(0,h/2),Point(w,h/2),Scalar(0,0,0));
 	char buf[10];
 	sprintf(buf,"%d",num);
 	imshow(buf,mat);
@@ -141,6 +171,7 @@ double getEMDistance(const MinutiaeTemplate & mt1, const MinutiaeTemplate & mt2,
 	c1.getCenter(mt1); c2.getCenter(mt2);
 	c1.fromTemplate(mt1); c2.fromTemplate(mt2);
 	code1.fromCircle(c1); code2.fromCircle(c2);
+	code1.obfusticate(); code2.obfusticate();
 	return code1.emDistance(code2);
 }
 
@@ -464,37 +495,15 @@ void testWithFingerprints()
 		for(int iB = 0; iB < nB; iB++)
 		{
 			int nBin = nBinSet[iB];
-#else
-			int iT = 2;
-			int iB = 2;
-			double T = Tset[iT];
-			int nBin = nBinSet[iB];
-#endif
 
 			for(int i = 0; i < FINGERPRINT_NUM; i++)
 			{
 				for(int j = 0; j < FINGERPRINT_SET_SIZE; j++)
 				{
-#ifdef CALCULATE_DISTANCE
-					rightDistance[i][j] = getEMRotateDistance(templates[i][0],templates[i][j],nBin,T);
-					wrongDistance[i][j] = getEMRotateDistance(templates[i][0],templates[(i+1)%FINGERPRINT_NUM][j],nBin,T);
-#else
-					Circle c;
-					c.setT(T);
-					c.getCenter(templates[i][j]);
-					CountCode code(nBin);
-					c.fromTemplate(templates[i][j]);
-					code.fromCircle(c);
-					countCodes[i][j] = code;
-					cout << i << ' ' << j << endl;
-					drawCode(code,j);
-#endif
+					rightDistance[i][j] = getEMDistance(templates[i][0],templates[i][j],nBin,T);
+					wrongDistance[i][j] = getEMDistance(templates[i][0],templates[(i+1)%FINGERPRINT_NUM][j],nBin,T);
 				}
-#ifndef CALCULATE_DISTANCE
-				waitKey();
-#endif
 			}
-#ifdef CALCULATE_DISTANCE
 			for(int i = 0; i < FINGERPRINT_NUM; i++)
 			{
 				for(int j = 1; j < FINGERPRINT_SET_SIZE; j++)
@@ -511,13 +520,41 @@ void testWithFingerprints()
 				}
 			}
 			cout << endl;
-#endif
-
-#ifdef CALCULATE_DISTANCE
+		}
+	}
+#else
+	for(int i = 0; i < FINGERPRINT_NUM; i++)
+	{
+		for(int j = 0; j < FINGERPRINT_SET_SIZE; j++)
+		{
+			int iT = 0;
+			int iB = 2;
+			double T = Tset[iT];
+			int nBin = nBinSet[iB];
+			Circle c;
+			c.setT(T);
+			c.getCenter(templates[i][j]);
+			CountCode code(nBin);
+			c.fromTemplate(templates[i][j]);
+			code.fromCircle(c);
+			countCodes[i][j] = code;
+		}
+	}
+	for(int i = 0; i < FINGERPRINT_NUM; i++)
+	{
+		double d1 = countCodes[i][0].emDistance(countCodes[i][1]);
+		double d2 = countCodes[i][0].emDistance(countCodes[i+1][1]);
+		cout << d1 << ' ' << d2 << endl;
+		if(d1 > d2)
+		{
+			cout << countCodes[i][0].getSum() << ' ' << countCodes[i][1].getSum() << endl;
+			cout << templates[i][0].getSize() << ' ' << templates[i][1].getSize() << endl;
+			drawCodeDiff(countCodes[i][0],countCodes[i][1],0);
+			drawCodeDiff(countCodes[i][0],countCodes[i+1][1],1);
+			waitKey();
 		}
 	}
 #endif
-
 }
 
 int main()

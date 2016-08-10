@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include "fingerprint_reader.h"
 
-const unsigned int MINUTIAE_BUF_SIZE = 40;
+const unsigned int MINUTIAE_BUF_SIZE = 30;
 const unsigned int DEFAULT_MAX_X = 400;
 const unsigned int DEFAULT_MAX_Y = 400;
 

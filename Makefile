@@ -8,5 +8,8 @@ LIB_DIR=-L"lib"
 $(BIN): $(OBJS)
 	g++ $(OBJS) -o $(BIN) $(LIBS) $(LIB_DIR) $(FLAGS)
 
+stat: stat.cpp
+	g++ $< -o $@
+
 %.o: %.cpp $(subst .o,.h,$(OBJS))
 	g++ -c $< -o $@ $(FLAGS) $(INCLUDES)
