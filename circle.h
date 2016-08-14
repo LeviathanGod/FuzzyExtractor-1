@@ -2,10 +2,12 @@
 #define __CIRCLE_H__
 
 #include <vector>
+#include <algorithm>
 #include "minutiae_template.h"
 
-const int DEFAULT_R = 250;
+const int DEFAULT_R = 1000;
 const double DEFAULT_T = 0.0;
+const double EPSILON = 0.01;
 
 class Circle {
 	int R;
@@ -24,6 +26,12 @@ public:
 	inline int getR() const {return R;}
 	void fromTemplate(const MinutiaeTemplate & mt);
 	void fromMinutiaPair(const Minutia & m1, const Minutia & m2);
+	void getDistanceFromMinutiaPair(const Minutia & m1, const Minutia & m2);
+	void getAnglesFromMinutiaPair(const Minutia & m1, const Minutia & m2);
+	void getDistanceSetFromTemplate(const MinutiaeTemplate & mt);
+	void getAnglePairsFromTemplate(const MinutiaeTemplate & mt);
+	void sort(){std::sort(points.begin(),points.end());}
+	double distance(Circle & rh);
 };
 
 #endif

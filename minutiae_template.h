@@ -2,9 +2,10 @@
 #define __MINUTIAE_TEMPLATE_H__
 
 #include <cstdlib>
+#include <cmath>
 #include "fingerprint_reader.h"
 
-const unsigned int MINUTIAE_BUF_SIZE = 30;
+const unsigned int MINUTIAE_BUF_SIZE = 5;
 const unsigned int DEFAULT_MAX_X = 400;
 const unsigned int DEFAULT_MAX_Y = 400;
 
@@ -17,9 +18,13 @@ public:
 	inline int getY() const {return y;}
 	inline void setX(int _x) {x=_x;}
 	inline void setY(int _y) {y=_y;}
+	inline double distance(const Minutia & rh) const
+	{
+		double dx = x-rh.x;
+		double dy = y-rh.y;
+		return std::sqrt(dx*dx+dy*dy);
+	}
 };
-
-double distance(const Minutia & m1, const Minutia & m2);
 
 class MinutiaeTemplate {
 	int size;
@@ -28,13 +33,16 @@ class MinutiaeTemplate {
 	Minutia minutiae[MINUTIAE_BUF_SIZE];
 	const char * filename = NULL;
 	int centerx, centery;
+	double centera;
 public:
 	MinutiaeTemplate():size(0){}
 	inline const char * getFilename()const{return filename;}
 	inline void setFilename(const char* file){filename=file;}
 	void setReferencePoint();
+	inline void setReferencePoint(int x,int y,double a){centerx=x;centery=y;centera=a;}
 	inline int getCenterX()const{return centerx;}
 	inline int getCenterY()const{return centery;}
+	inline int getCenterAlpha()const{return centera;}
 	inline int getSize() const {return size;} 
 	inline static void setMaxX(unsigned int _maxx){maxx=_maxx;}
 	inline static void setMaxY(unsigned int _maxy){maxy=_maxy;}

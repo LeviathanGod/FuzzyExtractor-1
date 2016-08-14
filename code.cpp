@@ -11,6 +11,7 @@ double CountCode::distance(const CountCode & rh) const
 	int sum = 0;
 	for(int i = 0; i < size; i++)
 		sum += abs(code[i]-rh.code[i]);
+		// sum += pow(fabs(code[i]-rh.code[i]),0.5);
 	return ((double)sum)/size;
 }
 

@@ -34,5 +34,6 @@ void MinutiaeTemplate::setReferencePoint()
 	thimble::DirectedPoint drp = fingerprint.getDirectedReferencePoint();
 	centerx = drp.x;
 	centery = drp.y;
-	std::cerr << filename << ' ' << centerx << ' ' << centery << std::endl;
+	centera = drp.direction.getDirectionAngle();
+	std::cerr << filename << ' ' << centerx << ' ' << centery << ' ' << centera << std::endl;
 }
